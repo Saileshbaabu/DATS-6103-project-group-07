@@ -43,7 +43,19 @@ merged_df['Dying_f'] = merged_df['Dying_f'].replace(to_replace='\[[^)]*\]', valu
 merged_df['Suicide_both'] = merged_df['Suicide_both'].replace(to_replace='\[[^)]*\]', value='', regex=True)
 merged_df['Suicide_m'] = merged_df['Suicide_m'].replace(to_replace='\[[^)]*\]', value='', regex=True)
 merged_df['Suicide_f'] = merged_df['Suicide_f'].replace(to_replace='\[[^)]*\]', value='', regex=True)
-
+# Change datatypes
+merged_df.dtypes
+merged_df["Schizophrenia(%)"]=merged_df["Schizophrenia(%)"].astype("float")
+merged_df["Bipolardisorder(%)"]=merged_df["Bipolardisorder(%)"].astype("float")
+merged_df["Eatingdisorders(%)"]=merged_df["Eatingdisorders(%)"].astype("float")
+merged_df["Eatingdisorders(%)"]=merged_df["Eatingdisorders(%)"].astype("float")
+merged_df["Dying_both"]=merged_df["Dying_both"].astype("float")
+merged_df["Dying_m"]=merged_df["Dying_m"].astype("float")
+merged_df["Dying_f"]=merged_df["Dying_f"].astype("float")
+merged_df["Suicide_both"]=merged_df["Suicide_both"].astype("float")
+merged_df["Suicide_m"]=merged_df["Suicide_m"].astype("float")
+merged_df["Suicide_f"]=merged_df["Suicide_f"].astype("float")
+merged_df.dtypes
 
 merged_df.to_csv('merged_data.csv', index=False)
 '''
