@@ -1,0 +1,113 @@
+# EDA
+use "\\apporto.com\dfs\GWU\Users\siyudu_gwu\Desktop\final_data.dta"
+encode country, gen(countries) # Convert the country string variable into a numerical variable
+xtset countries year # Define cross-section variable and time series variable
+xtdes
+xtsum
+sum suicide schizophrenia bipolardisorder eatingdisorders anxietydisorders drugusedisorders depression alcoholusedisorders population
+pwcorr suicide schizophrenia bipolardisorder eatingdisorders anxietydisorders drugusedisorders depression alcoholusedisorders population
+twoway (scatter suicide schizophrenia)(lfit suicide schizophrenia) #plot the scatter plot of core explanatory variable and explained variable and draw the regression line
+twoway (scatter suicide bipolardisorder)(lfit suicide bipolardisorder)
+twoway (scatter suicide eatingdisorders)(lfit suicide eatingdisorders)
+twoway (scatter suicide anxietydisorders)(lfit suicide anxietydisorders)
+twoway (scatter suicide drugusedisorders)(lfit suicide drugusedisorders)
+twoway (scatter suicide depression)(lfit suicide depression)
+twoway (scatter suicide alcoholusedisorders)(lfit suicide alcoholusedisorders)
+twoway (scatter suicide population)(lfit suicide population)
+
+# Unit root test
+# Test cases with intercept terms and time trends
+xtunitroot ht schizophrenia, trend demean
+xtunitroot ht bipolardisorder, trend demean
+xtunitroot ht eatingdisorders, trend demean
+xtunitroot ht anxietydisorders, trend demean
+xtunitroot ht drugusedisorders, trend demean
+xtunitroot ht depression, trend demean
+xtunitroot ht alcoholusedisorders, trend demean
+xtunitroot ht population, trend demean
+xtunitroot ht suicide, trend demean
+# Test cases with intercept term
+xtunitroot ht schizophrenia, demean
+xtunitroot ht bipolardisorder, demean
+xtunitroot ht eatingdisorders, demean
+xtunitroot ht anxietydisorders, demean
+xtunitroot ht drugusedisorders, demean
+xtunitroot ht depression, demean
+xtunitroot ht alcoholusedisorders, demean
+xtunitroot ht population, demean
+xtunitroot ht suicide, demean
+# Test cases without intercept term or time trend term
+xtunitroot ht schizophrenia, noconstant demean
+xtunitroot ht bipolardisorder, noconstant demean
+xtunitroot ht eatingdisorders, noconstant demean
+xtunitroot ht anxietydisorders, noconstant demean
+xtunitroot ht drugusedisorders, noconstant demean
+xtunitroot ht depression, noconstant demean
+xtunitroot ht alcoholusedisorders, noconstant demean
+xtunitroot ht population, noconstant demean
+xtunitroot ht suicide, noconstant demean
+
+# Differential & Unit root test
+gen D_schizophrenia=d.schizophrenia
+xtunitroot ht D_schizophrenia, trend demean
+xtunitroot ht D_schizophrenia, demean
+xtunitroot ht D_schizophrenia, noconstant demean
+gen D2_schizophrenia=d.D_schizophrenia
+xtunitroot ht D2_schizophrenia, trend demean
+xtunitroot ht D2_schizophrenia, demean
+xtunitroot ht D2_schizophrenia, noconstant demean
+gen D_bipolardisorder=d.bipolardisorder
+xtunitroot ht D_bipolardisorder, trend demean
+xtunitroot ht D_bipolardisorder, demean
+xtunitroot ht D_bipolardisorder, noconstant demean
+gen D_eatingdisorders=d.eatingdisorders
+xtunitroot ht D_eatingdisorders, trend demean
+xtunitroot ht D_eatingdisorders, demean
+xtunitroot ht D_eatingdisorders, noconstant demean
+gen D_anxietydisorders=d.anxietydisorders
+xtunitroot ht D_anxietydisorders, trend demean
+xtunitroot ht D_anxietydisorders, demean
+xtunitroot ht D_anxietydisorders, noconstant demean
+gen D_drugusedisorders=d.drugusedisorders
+xtunitroot ht D_drugusedisorders, trend demean
+xtunitroot ht D_drugusedisorders, demean
+xtunitroot ht D_drugusedisorders, noconstant demean
+gen D_depression=d.depression
+xtunitroot ht D_depression, trend demean
+xtunitroot ht D_depression, demean
+xtunitroot ht D_depression, noconstant demean
+gen D_alcoholusedisorders=d.alcoholusedisorders
+xtunitroot ht D_alcoholusedisorders, trend demean
+xtunitroot ht D_alcoholusedisorders, demean
+xtunitroot ht D_alcoholusedisorders, noconstant demean
+gen D_population=d.population
+xtunitroot ht D_population, trend demean
+xtunitroot ht D_population, demean
+xtunitroot ht D_population, noconstant demean
+gen D2_population=d.D_population
+xtunitroot ht D2_population, trend demean
+xtunitroot ht D2_population, demean
+xtunitroot ht D2_population, noconstant demean
+gen D_suicide=d.suicide
+xtunitroot ht D_suicide, trend demean
+xtunitroot ht D_suicide, demean
+xtunitroot ht D_suicide, noconstant demean
+
+# Model Selection
+xtreg suicide D2_schizophrenia D_bipolardisorder D_eatingdisorders D_anxietydisorders D_drugusedisorders D_depression D_alcoholusedisorders D2_population, fe
+est store fe
+xtreg suicide D2_schizophrenia D_bipolardisorder D_eatingdisorders D_anxietydisorders D_drugusedisorders D_depression D_alcoholusedisorders D2_population, re
+xttest0
+est store re
+hausman fe re
+
+# Sequence correlation test
+xtserial suicide D2_schizophrenia D_bipolardisorder D_eatingdisorders D_anxietydisorders D_drugusedisorders D_depression D_alcoholusedisorders D2_population
+# Heteroscedasticity test
+qui xtreg suicide D2_schizophrenia D_bipolardisorder D_eatingdisorders D_anxietydisorders D_drugusedisorders D_depression D_alcoholusedisorders D2_population, fe
+ssc install xttest3
+xttest3
+
+# Final Model
+xtpcse suicide D2_schizophrenia D_bipolardisorder D_eatingdisorders D_anxietydisorders D_drugusedisorders D_depression D_alcoholusedisorders D2_population # Create fixed-effects model with corrected standard error
+xtpcse suicide D2_schizophrenia D_bipolardisorder D_drugusedisorders D_depression D2_population # Removing insignificant regressors
